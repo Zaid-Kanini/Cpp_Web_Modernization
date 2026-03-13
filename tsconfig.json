@@ -1,5 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "node",
@@ -9,7 +8,11 @@
     "rootDir": "./src",
     "types": ["node", "jest"],
     "skipLibCheck": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "strict": false,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*", "src/types/**/*.d.ts"],
   "exclude": ["node_modules", "dist"],

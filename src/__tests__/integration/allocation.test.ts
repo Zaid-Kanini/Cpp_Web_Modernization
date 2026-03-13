@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
 import app from '../../app';
-import { generateToken } from '../../utils/jwt.utils';
+import { generateAccessToken } from '../../utils/jwt.utils';
 import * as emailService from '../../services/email.service';
 
 const prisma = new PrismaClient();
@@ -46,13 +46,13 @@ describe('Allocation Integration Tests', () => {
     adminUserId = adminUser.user_id;
     facultyUserId = facultyUser.user_id;
 
-    adminToken = generateToken({
+    adminToken = generateAccessToken({
       user_id: adminUserId,
       email: adminUser.email,
       role: adminUser.role,
     });
 
-    facultyToken = generateToken({
+    facultyToken = generateAccessToken({
       user_id: facultyUserId,
       email: facultyUser.email,
       role: facultyUser.role,

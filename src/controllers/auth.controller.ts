@@ -35,7 +35,7 @@ export class AuthController {
       const userAgent = req.get('user-agent');
 
       const { response, accessToken, refreshToken } = await authService.login(
-        validationResult.data,
+        validationResult.data as { email: string; password: string },
         ipAddress,
         userAgent
       );
