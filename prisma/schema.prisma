@@ -1,0 +1,169 @@
+// Prisma Schema for Training Schedule Management
+// PostgreSQL 16+ with Prisma ORM 5.9+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Role Enum for User Authorization
+enum Role {
+  ADMIN
+  FACULTY
+}
+
+// ScheduleStatus Enum for Schedule Lifecycle
+enum ScheduleStatus {
+  ACTIVE
+  CANCELLED
+  COMPLETED
+}
+
+// AllocationStatus Enum for Trainer Allocation Lifecycle
+enum AllocationStatus {
+  PENDING
+  ACCEPTED
+  CANCELLED
+}
+
+// ActionType Enum for Audit Log Actions
+enum ActionType {
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  LOGOUT
+  CREATE
+  UPDATE
+  DELETE
+  ACCEPT
+  CANCEL
+}
+
+// EntityType Enum for Audit Log Entities
+enum EntityType {
+  USER
+  SCHEDULE
+  ALLOCATION
+}
+
+// User Model - Represents system users (Administrators and Faculty)
+model User {
+  user_id                    String   @id @default(uuid()) @db.Uuid
+  email                      String   @unique
+  password_hash              String
+  role                       Role
+  first_name                 String
+  last_name                  String
+  technology_specializations String[]
+
+  // Account Security Fields
+  is_active             Boolean   @default(true)
+  force_password_change Boolean   @default(false)
+  failed_login_attempts Int       @default(0)
+  account_locked_until  DateTime?
+
+  // Audit Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relationships
+  created_schedules    Schedule[]          @relation("ScheduleCreator")
+  allocations_made     TrainerAllocation[] @relation("AllocationCreator")
+  allocations_received TrainerAllocation[] @relation("FacultyAllocation")
+  audit_logs           AuditLog[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// Schedule Model - Represents training schedule records
+model Schedule {
+  schedule_id            String         @id @default(uuid()) @db.Uuid
+  batch_id               Int            @unique
+  technology             String
+  start_date             DateTime       @db.Date
+  end_date               DateTime       @db.Date
+  number_of_days         Int
+  venue                  String
+  number_of_participants Int
+  month                  String
+  status                 ScheduleStatus @default(ACTIVE)
+
+  // Optimistic Locking
+  version Int @default(1)
+
+  // Soft Delete
+  is_active Boolean @default(true)
+
+  // Audit Fields
+  created_by String   @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relationships
+  creator             User                @relation("ScheduleCreator", fields: [created_by], references: [user_id], onDelete: Restrict)
+  trainer_allocations TrainerAllocation[]
+
+  @@index([technology])
+  @@index([start_date])
+  @@index([end_date])
+  @@index([status])
+  @@index([month])
+  @@index([batch_id])
+  @@map("schedules")
+}
+
+// TrainerAllocation Model - Represents assignment of faculty to schedules
+model TrainerAllocation {
+  allocation_id       String           @id @default(uuid()) @db.Uuid
+  schedule_id         String           @db.Uuid
+  faculty_id          String           @db.Uuid
+  allocated_by        String           @db.Uuid
+  allocation_status   AllocationStatus @default(PENDING)
+  allocation_date     DateTime         @default(now())
+  response_date       DateTime?
+  cancellation_reason String?
+
+  // Audit Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relationships
+  schedule  Schedule @relation(fields: [schedule_id], references: [schedule_id], onDelete: Cascade)
+  faculty   User     @relation("FacultyAllocation", fields: [faculty_id], references: [user_id], onDelete: Restrict)
+  allocator User     @relation("AllocationCreator", fields: [allocated_by], references: [user_id], onDelete: Restrict)
+
+  @@unique([schedule_id, faculty_id])
+  @@index([schedule_id])
+  @@index([faculty_id])
+  @@index([allocation_status])
+  @@map("trainer_allocations")
+}
+
+// AuditLog Model - Immutable audit trail for compliance
+model AuditLog {
+  log_id         String     @id @default(uuid()) @db.Uuid
+  timestamp      DateTime   @default(now()) @db.Timestamptz
+  user_id        String?    @db.Uuid
+  action_type    ActionType
+  entity_type    EntityType
+  entity_id      String     @db.Uuid
+  before_value   Json?
+  after_value    Json?
+  ip_address     String?
+  user_agent     String?
+  correlation_id String     @db.Uuid
+
+  // Relationships
+  user User? @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
+
+  @@index([timestamp])
+  @@index([user_id])
+  @@index([action_type])
+  @@index([entity_type])
+  @@index([correlation_id])
+  @@map("audit_logs")
+}

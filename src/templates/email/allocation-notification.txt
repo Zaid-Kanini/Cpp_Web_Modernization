@@ -1,0 +1,30 @@
+Training Schedule Allocation Notification
+
+Hello {{first_name}} {{last_name}},
+
+You have been allocated to the following training schedule(s). Please review the details below:
+
+{{#each schedules}}
+----------------------------------------
+Batch {{batch_id}} - {{technology}}
+----------------------------------------
+Start Date: {{start_date}}
+End Date: {{end_date}}
+Venue: {{venue}}
+
+{{/each}}
+
+Next Steps:
+- Review the schedule details carefully
+- Mark your calendar for the training dates
+- Prepare necessary training materials
+- Contact the administrator if you have any conflicts or questions
+
+If you have any questions or concerns about this allocation, please contact your administrator.
+
+Best regards,
+Training Schedule Management Team
+
+---
+This is an automated message. Please do not reply to this email.
+© 2024 Training Schedule Management System. All rights reserved.

@@ -1,0 +1,30 @@
+Welcome to Training Schedule Management
+========================================
+
+Hello {{first_name}},
+
+Your account has been successfully created in the Training Schedule Management system.
+
+LOGIN CREDENTIALS
+-----------------
+Email: {{email}}
+Temporary Password: {{temporary_password}}
+
+IMPORTANT SECURITY NOTICE
+-------------------------
+⚠️ This is a temporary password that must be changed on your first login
+⚠️ Do not share this password with anyone
+⚠️ Please log in as soon as possible to set your permanent password
+
+LOGIN URL
+---------
+{{login_url}}
+
+If you did not expect this email or have any questions, please contact your system administrator immediately.
+
+Best regards,
+Training Schedule Management Team
+
+---
+This is an automated message. Please do not reply to this email.
+© 2024 Training Schedule Management System. All rights reserved.
