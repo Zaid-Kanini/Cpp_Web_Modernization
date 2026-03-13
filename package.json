@@ -12,7 +12,7 @@
     "validate:openapi": "swagger-cli validate openapi.yaml",
     "bundle:openapi": "swagger-cli bundle openapi.yaml -o openapi.json -t json",
     "generate:types": "npx openapi-typescript openapi.yaml -o src/types/openapi.ts",
-    "prebuild": "npm run generate:types",
+    "prebuild": "prisma generate && npm run generate:types",
     "prisma:validate": "prisma validate",
     "prisma:format": "prisma format",
     "prisma:generate": "prisma generate",
