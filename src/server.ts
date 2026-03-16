@@ -10,9 +10,11 @@ try {
 }
 
 const PORT = config.port;
+const HOST = '0.0.0.0';
 
-const server = app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT} in ${config.nodeEnv} mode`);
+const server = app.listen(PORT, HOST, () => {
+  logger.info(`Server running on ${HOST}:${PORT} in ${config.nodeEnv} mode`);
+  console.log(`Server listening on ${HOST}:${PORT}`);
 });
 
 const gracefulShutdown = (signal: string) => {

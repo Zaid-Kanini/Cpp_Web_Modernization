@@ -54,7 +54,7 @@ export const env: Env = {
 };
 
 export const validateConfig = (): void => {
-  const requiredVars = ['PORT', 'NODE_ENV', 'CORS_ORIGIN'];
+  const requiredVars = ['NODE_ENV', 'CORS_ORIGIN'];
 
   const missingVars = requiredVars.filter((varName) => !process.env[varName]);
 
@@ -72,4 +72,5 @@ export const validateConfig = (): void => {
   }
 
   console.log('✓ Environment configuration validated successfully');
+  console.log(`Server will listen on port ${config.port}`);
 };
