@@ -1,7 +1,11 @@
 import nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import dns from 'dns';
 import { env } from './env.config';
 import { logger } from '../utils/logger';
+
+// Set DNS to prefer IPv4 to avoid IPv6 connectivity issues on some hosting platforms
+dns.setDefaultResultOrder('ipv4first');
 
 // Email configuration for nodemailer
 const transportOptions: SMTPTransport.Options = {
