@@ -1,9 +1,10 @@
 import nodemailer from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { env } from './env.config';
 import { logger } from '../utils/logger';
 
 // Email configuration for nodemailer
-export const emailTransporter = nodemailer.createTransport({
+const transportOptions: SMTPTransport.Options = {
   host: env.SMTP_HOST,
   port: env.SMTP_PORT,
   secure: env.SMTP_PORT === 465,
@@ -16,11 +17,18 @@ export const emailTransporter = nodemailer.createTransport({
     minVersion: 'TLSv1.2',
   },
   requireTLS: true,
-});
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 30000,
+};
 
+export const emailTransporter = nodemailer.createTransport(transportOptions);
+
+// Verify email transporter asynchronously (non-blocking)
+// This prevents app startup failure if SMTP server is temporarily unreachable
 emailTransporter.verify((error: Error | null) => {
   if (error) {
-    logger.warn('Email transporter verification failed', { error: error.message });
+    logger.warn('Email transporter verification failed - emails may not be sent', { error: error.message });
   } else {
     logger.info('Email transporter is ready');
   }
